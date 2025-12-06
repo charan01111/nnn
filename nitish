@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Camera & Location Access</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        video, img {
+            width: 300px;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        button {
+            padding: 12px 20px;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Camera & GPS Access Demo</h2>
+
+<button onclick="captureData()">Allow Camera & Location</button>
+
+<br><br>
+
+<video id="video" autoplay playsinline></video>
+<br>
+<img id="photo" />
+
+<p id="location"></p>
+
+<script>
+async function captureData() {
+    try {
+        // CAMERA ACCESS
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        document.getElementById("video").srcObject = stream;
+
+        // Take photo after 2 seconds
+        setTimeout(() => {
+            const video = document.getElementById("video");
+            const canvas = document.createElement("canvas");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext("2d").drawImage(video, 0, 0);
+            document.getElementById("photo").src = canvas.toDataURL("image/png");
+        }, 2000);
+
+        // GPS ACCESS
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition((pos) => {
+                document.getElementById("location").innerText =
+                    "Latitude: " + pos.coords.latitude +
+                    " | Longitude: " + pos.coords.longitude;
+            });
+        } else {
+            alert("GPS not supported");
+        }
+
+    } catch (err) {
+        alert("Permission denied or error: " + err);
+    }
+}
+</script>
+
+</body>
+</html>
